@@ -35,7 +35,7 @@ function createFloatingWindow(mediaUrl, mediaType) {
 
 document.addEventListener('mouseover', (event) => {
     const target = event.target;
-    if (target.tagName === 'IMG') {
+    if (target.tagName === 'IMG' || target.tagName === 'VIDEO') {
         const mediaUrl = target.src;
         const mediaType = target.tagName === 'VIDEO' ? 'video' : 'image';
         createFloatingWindow(mediaUrl, mediaType);

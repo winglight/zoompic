@@ -3,13 +3,35 @@
 let previewContainer = null;
 let currentMedia = null;
 let previewTimer = null;
+let closeTimer = null;
 let lastMousePosition = { x: 0, y: 0 };
+
+function startCloseTimer() {
+  if (closeTimer) {
+    clearTimeout(closeTimer);
+  }
+  closeTimer = setTimeout(() => {
+    hidePreview();
+  }, 2000);
+}
 
 function createPreviewContainer() {
   if (previewContainer) return;
   
   previewContainer = document.createElement('div');
   previewContainer.className = 'media-preview-container';
+  
+  // Add mouse enter/leave handlers for preview window
+  previewContainer.addEventListener('mouseenter', () => {
+    if (closeTimer) {
+      clearTimeout(closeTimer);
+    }
+  });
+  
+  previewContainer.addEventListener('mouseleave', () => {
+    startCloseTimer();
+  });
+  
   document.body.appendChild(previewContainer);
 }
 
@@ -101,6 +123,7 @@ function showPreview(media) {
     
     // Initial position
     updatePreviewPosition({ clientX: lastMousePosition.x, clientY: lastMousePosition.y });
+    startCloseTimer();
   }, 1000);
 }
 
@@ -108,6 +131,10 @@ function hidePreview() {
   if (previewTimer) {
     clearTimeout(previewTimer);
     previewTimer = null;
+  }
+  if (closeTimer) {
+    clearTimeout(closeTimer);
+    closeTimer = null;
   }
   if (previewContainer) {
     previewContainer.style.display = 'none';
