@@ -142,12 +142,47 @@ function hidePreview() {
   currentMedia = null;
 }
 
+function isImageUrl(url) {
+  return url.match(/\.(jpeg|jpg|gif|png|webp)$/i) !== null;
+}
+
+function showImageFromUrl(url) {
+  const img = new Image();
+  img.src = url;
+  img.onload = () => {
+    currentMedia = img;
+    showPreview(img);
+  };
+}
+
 // Event Listeners
 document.addEventListener('mouseover', (e) => {
-  const media = e.target;
-  if (media.tagName === 'IMG' || media.tagName === 'VIDEO') {
-    currentMedia = media;
-    showPreview(media);
+  const target = e.target;
+  
+  // Check for direct media elements
+  if (target.tagName === 'IMG' || target.tagName === 'VIDEO') {
+    currentMedia = target;
+    showPreview(target);
+    return;
+  }
+  
+  // Check for links containing images
+  if (target.tagName === 'A') {
+    if (target.querySelector('img')) {
+      currentMedia = target.querySelector('img');
+      showPreview(currentMedia);
+      return;
+      
+    }else if (isImageUrl(target.innerHTML)) {
+      showImageFromUrl(target.innerHTML);
+      return;
+      
+    }else{
+      const href = target.href;
+      if (isImageUrl(href)) {
+        showImageFromUrl(href);
+      }
+    }
   }
 });
 
